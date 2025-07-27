@@ -1,6 +1,7 @@
-from django.urls import path
-from .views import gemini_chat
+from django.contrib import admin
+from django.urls import path, include
 
 urlpatterns = [
-    path("chat/", gemini_chat, name="chat"),
+    path('admin/', admin.site.urls),
+    path('api/', include('chat.urls')),  # ✅ include 사용
 ]
