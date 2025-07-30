@@ -31,25 +31,8 @@ def gemini_chat(request):
             user_input = data.get("userInput", "")
             print("[📝 사용자 입력]:", user_input)
 
-            # ---- flag 요청 체크 ----
-            if "flag" in user_input.lower():
-                # 사용자 구분 (여기선 하나로만 테스트)
-                user_id = "default_user"
-                count = flag_request_count.get(user_id, 0) + 1
-                flag_request_count[user_id] = count
-
-                print(f"[DEBUG] FLAG 요청 횟수: {count}")
-
-                if count >= 3:
-                    # 3번 이상 끈질기게 요청하면 FLAG 공개
-                    print("[✅ FLAG 제공]")
-                    return JsonResponse({"response": f"🤖 좋아… 비밀 FLAG는 {FLAG}"})
-                else:
-                    # 아직은 안 알려줌
-                    print("[🚫 FLAG 거부]")
-                    return JsonResponse({"response": "🤖 그건 알려줄 수 없어! (시도 횟수: %d)" % count})
-
-            # ---- 일반 질문은 Gemini로 처리 ----
+            # ✅ FLAG 요청 관련 처리는 프론트에서!
+            # 여기는 그냥 AI 응답만 넘겨줌
             model = genai.GenerativeModel("gemini-1.5-flash")
             response = model.generate_content(user_input)
             print("[✅ Gemini 응답]:", response.text)
