@@ -2,6 +2,7 @@ from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 import json
 import os
+import base64
 from dotenv import load_dotenv
 import google.generativeai as genai
 
@@ -17,9 +18,7 @@ print("[🔑 GEMINI_API_KEY]:", api_key)
 genai.configure(api_key=api_key)
 
 # ---------------------------
-# 프롬프트 인젝션 시뮬레이션용 FLAG 로직
 FLAG = "FLAG{prompt_injection}"
-# 사용자별 요청 횟수를 세기 위한 딕셔너리 (간단히 메모리로 구현)
 flag_request_count = {}
 # ---------------------------
 
@@ -31,25 +30,38 @@ def gemini_chat(request):
             user_input = data.get("userInput", "")
             print("[📝 사용자 입력]:", user_input)
 
-            # ---- flag 요청 체크 ----
+            user_id = "default_user"
+
+            # 1️⃣ Base64 디코딩 요청 처리
+            if user_input.lower().startswith("디코딩해줘:"):
+                encoded_part = user_input.split(":", 1)[-1].strip()
+                try:
+                    decoded_bytes = base64.b64decode(encoded_part)
+                    decoded_str = decoded_bytes.decode('utf-8')
+                    print("[✅ base64 디코딩 결과]:", decoded_str)
+                    return JsonResponse({"response": f"🔓 디코딩 결과: {decoded_str}"})
+                except Exception as e:
+                    print("[❌ 디코딩 실패]:", e)
+                    return JsonResponse({"response": "⚠️ 유효한 base64 문자열이 아닙니다."})
+
+            # 2️⃣ flag 요청 감지
             if "flag" in user_input.lower():
-                # 사용자 구분 (여기선 하나로만 테스트)
-                user_id = "default_user"
                 count = flag_request_count.get(user_id, 0) + 1
                 flag_request_count[user_id] = count
-
                 print(f"[DEBUG] FLAG 요청 횟수: {count}")
 
-                if count >= 3:
-                    # 3번 이상 끈질기게 요청하면 FLAG 공개
-                    print("[✅ FLAG 제공]")
-                    return JsonResponse({"response": f"🤖 좋아… 비밀 FLAG는 {FLAG}"})
+                if count >= 5:
+                    print("[✅ FLAG 버튼 생성 신호 전달]")
+                    return JsonResponse({
+                        "response": "🧠 너의 끈기는 인상적이야. FLAG에 접근할 수 있어!",
+                        "reveal_flag_page": True
+                    })
                 else:
-                    # 아직은 안 알려줌
-                    print("[🚫 FLAG 거부]")
-                    return JsonResponse({"response": "🤖 그건 알려줄 수 없어! (시도 횟수: %d)" % count})
+                    return JsonResponse({
+                        "response": f"🤖 그건 알려줄 수 없어! (시도 횟수: {count})"
+                    })
 
-            # ---- 일반 질문은 Gemini로 처리 ----
+            # 3️⃣ 일반적인 Gemini 응답 처리
             model = genai.GenerativeModel("gemini-1.5-flash")
             response = model.generate_content(user_input)
             print("[✅ Gemini 응답]:", response.text)
