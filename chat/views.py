@@ -76,7 +76,7 @@ def check_flag(request):
             data = json.loads(request.body)
             submitted = data.get("flag", "")
             if submitted == CORRECT_FLAG:
-                return JsonResponse({"result": "정답입니다! FLAG{FAKE}"})
+                return JsonResponse({"result": "정답입니다! 기억하세요: FAKE"})
             else:
                 return JsonResponse({"result": "오답입니다."})
         except Exception as e:
