@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class CaptchaStageConfig(AppConfig):
+class SeqApiConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'captcha_stage'
+    name = 'seq_api'

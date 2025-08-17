@@ -37,11 +37,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # 내가 만든 앱들
     'chat',
-    'captcha_stage',
+    'seq_api',
+
+    # 서드파티 앱
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -124,7 +130,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-INSTALLED_APPS += ['corsheaders']
-MIDDLEWARE = ['corsheaders.middleware.CorsMiddleware'] + MIDDLEWARE
-
-CORS_ALLOW_ALL_ORIGINS = True  # 개발용이니만 나중에 도메인 지정 권장
+# CORS 설정
+CORS_ALLOW_ALL_ORIGINS = True   # 개발용 (배포 시 도메인 제한)
+DEBUG = True
+ALLOWED_HOSTS = ['*']
