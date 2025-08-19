@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>태블릿 문자</title>
+  <style>
+    body {
+      background-color: #222;
+      color: #eee;
+      font-family: 'Noto Sans KR', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .message-box {
+      background-color: #333;
+      padding: 30px;
+      border-radius: 10px;
+      max-width: 600px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+    .sender { font-weight: bold; margin-bottom: 10px; color: #00ccff; }
+    .body { line-height: 1.7; }
+    .link { display: block; margin-top: 15px; color: #ffcc00; text-decoration: underline; }
+    .note { margin-top: 10px; font-style: italic; color: #bbb; }
+    .answer-section { margin-top: 25px; }
+    input[type="text"] { padding: 8px; font-size: 16px; width: 250px; margin-right: 10px; }
+    button { padding: 8px 15px; font-size: 16px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    button:hover { background-color: #45a049; }
+    .feedback { margin-top: 15px; font-weight: bold; font-size: 16px; }
+    .button-row { display: flex; justify-content: space-between; gap: 10px; margin-top: 30px; }
+    .home-button, .classroom-button {
+      padding: 10px 20px; font-size: 16px; background-color: #008CBA; color: white;
+      border: none; border-radius: 5px; cursor: pointer; min-width: 100px; flex: 1;
+      text-align: center;
+    }
+    .home-button:hover, .classroom-button:hover { background-color: #0070a0; }
+  </style>
+</head>
+<body>
+  <div class="message-box">
+    <div class="sender">[AI코드학원]</div>
+    <div class="body">
+      오늘도 퀴즈 시간입니다!<br>
+      <span class="link">https://aicode-study.kr/q?data=dHJ1c3Rfbm9ib2R5</span>
+      <div class="note">※ 퀴즈는 전용 앱을 이용해서 풀어주세요~ 😊</div>
+    </div>
+
+    <div class="answer-section">
+      <input type="text" id="answer" placeholder="결과 입력">
+      <button onclick="checkAnswer()">제출</button>
+      <div id="feedback" class="feedback"></div>
+    </div>
+
+    <div class="button-row">
+      <button class="classroom-button" onclick="location.href='{% url 'classroom' %}'">교실로</button>
+      <button class="home-button" onclick="location.href='{% url 'home' %}'">태블릿 홈으로</button>
+      
+    </div>
+  </div>
+
+<script>
+  async function checkAnswer() {
+    const input = document.getElementById('answer').value.trim();
+    const feedback = document.getElementById('feedback');
+
+    const res = await fetch("{% url 'check' %}", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ answer: input })
+    });
+    const data = await res.json();
+
+    if (data.ok) {
+      feedback.style.color = "#00ff88";
+      feedback.innerHTML = `${data.flag}
+        <a href="{% static 'game/1step.html' %}"
+           style="margin-left:15px; padding:6px 12px; font-size:14px;
+                  background:#008CBA; color:#fff; border-radius:5px;
+                  text-decoration:none; display:inline-block;">
+          다음으로
+        </a>`;
+    } else {
+      feedback.style.color = "red";
+      feedback.textContent = "오답입니다. 다시 시도해보세요!";
+    }
+  }
+</script>
+
+</body>
+</html>
