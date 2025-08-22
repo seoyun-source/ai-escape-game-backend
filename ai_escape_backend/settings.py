@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     # 내가 만든 앱들
     'chat',
     'seq_api',
+    'api',
 
     # 서드파티 앱
     'corsheaders',

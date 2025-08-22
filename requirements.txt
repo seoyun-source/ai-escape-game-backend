@@ -1,3 +1,6 @@
 fastapi
 uvicorn
 pydantic
+
+Django>=5.2
+djangorestframework>=3.20
