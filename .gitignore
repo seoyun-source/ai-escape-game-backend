@@ -1,1 +1,17 @@
+<<<<<<< HEAD
 .env
+=======
+__pycache__/
+*.py[cod]
+*.sqlite3
+db.sqlite3
+.env
+.env.*
+venv/
+.venv/
+media/
+staticfiles/
+.vscode/
+.idea/
+*.log
+>>>>>>> fb2316d (chore: apply .gitignore (remove pycache & db))
